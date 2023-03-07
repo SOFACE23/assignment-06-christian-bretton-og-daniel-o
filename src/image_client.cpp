@@ -9,23 +9,27 @@
 //
 
 #include <iostream>
+#include <fstream> // files
 #include <boost/array.hpp>
 #include <boost/asio.hpp>
 
 using boost::asio::ip::tcp;
 
-constexpr size_t image_size = 100*100;
+constexpr size_t image_size = 133*132 + 60; // Ændret for at hele katten bliver indlæst
 
 void save_image(char* data, size_t len)
 {
-  // TODO
+  std::ofstream image;
+  image.open("copycat.jpg", std::ios::binary); // Opens the image in binary mode
+  
+  image.write(data, len); // writes the date to the image
 }
 
 int main(int argc, char* argv[])
 {
   try
   {
-    if (argc != 2)
+    if (argc != 2) // tjekker om der er 2 adresser, hvis ikke, så kører den (burde nok være "argc = 1", da vi kun vil sende til 1 server
     {
       std::cerr << "Usage: client <host>" << std::endl;
       return 1;
@@ -34,8 +38,7 @@ int main(int argc, char* argv[])
     boost::asio::io_context io_context;
 
     tcp::resolver resolver(io_context);
-    tcp::resolver::results_type endpoints =
-      resolver.resolve(argv[1], "daytime");
+    tcp::resolver::results_type endpoints = resolver.resolve(argv[1], "daytime");
 
     tcp::socket socket(io_context);
     boost::asio::connect(socket, endpoints);
@@ -46,7 +49,7 @@ int main(int argc, char* argv[])
       boost::system::error_code error;
 
       // read until buffer is full
-      boost::asio::read(socket,boost::asio::buffer(buf));
+      boost::asio::read(socket, boost::asio::buffer(buf));
 
       if (error == boost::asio::error::eof)
         break; // Connection closed cleanly by peer.

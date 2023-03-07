@@ -26,22 +26,25 @@ int main()
 {
   try
   {
-    boost::asio::io_context io_context;
+    // Definerer et objekt der indeholder hvad vi kommunikerer med
+    boost::asio::io_context io_context; 
 
-    tcp::acceptor acceptor(io_context, tcp::endpoint(tcp::v4(), 13));
+    // Definerer "acceptor" objektet, og observerer port 13
+    tcp::acceptor acceptor(io_context, tcp::endpoint(tcp::v4(), 13)); 
 
+    
     while (true)
     {
-      tcp::socket socket(io_context);
-      acceptor.accept(socket);
+      tcp::socket socket(io_context); // Socket der indeholder vores kommunikations muligheder
+      acceptor.accept(socket); // Serveren acceptere kommunikationen med dette endpoint (clienten)
 
-      std::string message = make_daytime_string();
+      std::string message = make_daytime_string(); // Laver en string der indeholder tiden som serveren holder styr på
 
-      boost::system::error_code ignored_error;
-      boost::asio::write(socket, boost::asio::buffer(message), ignored_error);
+      boost::system::error_code ignored_error; // laver en variabel der indeholder indexet på en fejltype
+      boost::asio::write(socket, boost::asio::buffer(message), ignored_error); // Skriver beskeden til clienten, og prøver hele loopet igen hvis det fejler.
     }
   }
-  catch (std::exception &e)
+  catch (std::exception &e) // hvis programmet ovenfor slår fejl, og printer erroren nedenfor.
   {
     std::cerr << e.what() << std::endl;
   }
